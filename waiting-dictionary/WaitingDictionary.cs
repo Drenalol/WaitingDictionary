@@ -73,7 +73,16 @@ namespace Drenalol.WaitingDictionary
         /// <exception cref="OperationCanceledException">If the <see cref="CancellationToken"/> is canceled.</exception>
         public async Task<TValue> WaitAsync(TKey key, CancellationToken token = default)
         {
-            var internalToken = token == default ? _internalCts.Token : token;
+            var hasOwnToken = false;
+            CancellationToken internalToken;
+            
+            if (token == default)
+                internalToken = _internalCts.Token;
+            else
+            {
+                internalToken = token;
+                hasOwnToken = true;
+            }
 
             TaskCompletionSource<TValue> tcs;
 
@@ -97,7 +106,7 @@ namespace Drenalol.WaitingDictionary
             await using (internalToken.Register(() =>
             {
                 if (_middleware?.CancellationActionInWait != null)
-                    _middleware.CancellationActionInWait(tcs);
+                    _middleware.CancellationActionInWait(tcs, hasOwnToken);
                 else
                     tcs.TrySetCanceled();
             }))
@@ -132,7 +141,7 @@ namespace Drenalol.WaitingDictionary
                             throw new InvalidOperationException($"An item with the same key ({key}) has already been added.");
 
                         var oldValue = await tcs.Task;
-                        var newValue = _middleware.DuplicateActionInSet(oldValue);
+                        var newValue = _middleware.DuplicateActionInSet(oldValue, value);
 
                         result = newValue;
                         tcs = InternalCreateTcs(key);
@@ -150,6 +159,7 @@ namespace Drenalol.WaitingDictionary
         /// <inheritdoc/>
         public void Dispose()
         {
+            _internalCts.Cancel();
             _internalCts.Dispose();
 
             foreach (var (_, tcs) in _dictionary)

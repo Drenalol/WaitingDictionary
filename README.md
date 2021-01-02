@@ -11,9 +11,9 @@ public class Mock
 {
     public List<Mock> Nodes { get; }
     
-    public Mock(Mock mock)
+    public Mock(params Mock[] mock)
     {
-        (Nodes ??= new List<Mock>()).Add(mock);
+        (Nodes ??= new List<Mock>()).AddRange(mock);
     }
     
     public Mock()
@@ -61,10 +61,10 @@ var middlewares =
         .RegisterCompletionActionInWait(() => Console.WriteLine("Wait completed"))
         // Will run on every duplication element found while executed SetAsync
         // Default: throw exception
-        .RegisterDuplicateActionInSet(oldMock => new Mock(oldMock)) // save old Mock to new Mock
+        .RegisterDuplicateActionInSet((old, @new) => new Mock(old, @new)) // merge two values
         // Will run on every cancellation WaitAsync by token
         // Default: TrySetCanceled
-        .RegisterCancellationActionInWait(tcs => tcs.SetException(new Exception("Something went wrong")));
+        .RegisterCancellationActionInWait((tcs, hasOwnToken) => tcs.SetException(new Exception("Something went wrong")));
 
 var dict = new WaitingDictionary<int, Mock>(middlewares);
 ```
