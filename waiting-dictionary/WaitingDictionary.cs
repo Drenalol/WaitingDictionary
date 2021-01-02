@@ -17,7 +17,7 @@ namespace Drenalol.WaitingDictionary
         private readonly ConcurrentDictionary<TKey, TaskCompletionSource<TValue>> _dictionary;
         private readonly AsyncLock _asyncLock;
         private readonly CancellationTokenSource _internalCts;
-        private readonly MiddlewareBuilder<TKey, TValue> _middleware;
+        private readonly MiddlewareBuilder<TValue> _middleware;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitingDictionary{TKey,TValue}"/> class.
@@ -33,7 +33,7 @@ namespace Drenalol.WaitingDictionary
         /// Initializes a new instance of the <see cref="WaitingDictionary{TKey,TValue}"/> class.
         /// </summary>
         /// <param name="middlewareBuilder">Middleware builder using it to add some logic to the Wait or Set methods</param>
-        public WaitingDictionary(MiddlewareBuilder<TKey, TValue> middlewareBuilder) : this()
+        public WaitingDictionary(MiddlewareBuilder<TValue> middlewareBuilder) : this()
         {
             _middleware = middlewareBuilder;
         }
@@ -63,7 +63,7 @@ namespace Drenalol.WaitingDictionary
         public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
 
         /// <summary>
-        /// Begins an asynchronous request to receive <see cref="Task{TValue}"/> associated with the specified <see cref="TKey"/>.
+        /// Begins an asynchronous request to receive <see cref="Task{TValue}"/> associated with the specified key.
         /// </summary>
         /// <param name="key">The key of the element.</param>
         /// <param name="token">A cancellation token to observe.</param>
@@ -107,7 +107,7 @@ namespace Drenalol.WaitingDictionary
         }
 
         /// <summary>
-        /// Asynchronously completing task returned by <see cref="WaitAsync"/> with a <see cref="TValue"/> associated with the specified <see cref="TKey"/>.
+        /// Asynchronously completing task returned by <see cref="WaitAsync"/> with a value associated with the specified key.
         /// </summary>
         /// <param name="key">The key of the element.</param>
         /// <param name="value">Value element that specified with key.</param>
@@ -145,6 +145,7 @@ namespace Drenalol.WaitingDictionary
             _middleware?.CompletionActionInSet?.Invoke();
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _internalCts.Dispose();

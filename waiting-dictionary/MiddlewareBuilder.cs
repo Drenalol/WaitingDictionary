@@ -7,9 +7,8 @@ namespace Drenalol.WaitingDictionary
     /// <summary>
     /// Middleware Builder
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public sealed class MiddlewareBuilder<TKey, TValue>
+    public sealed class MiddlewareBuilder<TValue>
     {
         internal Func<TValue, TValue> DuplicateActionInSet;
         internal Action CompletionActionInSet;
@@ -22,7 +21,7 @@ namespace Drenalol.WaitingDictionary
         /// <param name="action"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">If already registered</exception>
-        public MiddlewareBuilder<TKey, TValue> AddDuplicateActionInSet(Func<TValue, TValue> action)
+        public MiddlewareBuilder<TValue> RegisterDuplicateActionInSet(Func<TValue, TValue> action)
         {
             if (DuplicateActionInSet != null)
                 throw new InvalidOperationException($"{nameof(DuplicateActionInSet)} already registered");
@@ -37,7 +36,7 @@ namespace Drenalol.WaitingDictionary
         /// <param name="action"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">If already registered</exception>
-        public MiddlewareBuilder<TKey, TValue> AddCompletionActionInSet(Action action)
+        public MiddlewareBuilder<TValue> RegisterCompletionActionInSet(Action action)
         {
             if (CompletionActionInSet != null)
                 throw new InvalidOperationException($"{nameof(CompletionActionInSet)} already registered");
@@ -52,7 +51,7 @@ namespace Drenalol.WaitingDictionary
         /// <param name="action"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">If already registered</exception>
-        public MiddlewareBuilder<TKey, TValue> RegisterCancellationActionInWait(Action<TaskCompletionSource<TValue>> action)
+        public MiddlewareBuilder<TValue> RegisterCancellationActionInWait(Action<TaskCompletionSource<TValue>> action)
         {
             if (CancellationActionInWait != null)
                 throw new InvalidOperationException($"{nameof(CancellationActionInWait)} already registered");
@@ -67,7 +66,7 @@ namespace Drenalol.WaitingDictionary
         /// <param name="action"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">If already registered</exception>
-        public MiddlewareBuilder<TKey, TValue> AddCompletionActionInWait(Action action)
+        public MiddlewareBuilder<TValue> RegisterCompletionActionInWait(Action action)
         {
             if (CompletionActionInWait != null)
                 throw new InvalidOperationException($"{nameof(CompletionActionInWait)} already registered");

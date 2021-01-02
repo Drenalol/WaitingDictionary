@@ -13,9 +13,9 @@ namespace Drenalol.WaitingDictionary.Tests
         {
             const int key = 1337;
             using var waiters = new WaitingDictionary<int, Mock>(
-                new MiddlewareBuilder<int, Mock>()
-                    .AddCompletionActionInSet(() => TestContext.WriteLine("Set completed"))
-                    .AddCompletionActionInWait(() => TestContext.WriteLine("Wait completed"))
+                new MiddlewareBuilder<Mock>()
+                    .RegisterCompletionActionInSet(() => TestContext.WriteLine("Set completed"))
+                    .RegisterCompletionActionInWait(() => TestContext.WriteLine("Wait completed"))
             );
             var waitTask = waiters.WaitAsync(key);
             Assert.IsTrue(!waitTask.IsCompletedSuccessfully);
@@ -29,8 +29,8 @@ namespace Drenalol.WaitingDictionary.Tests
         {
             const int key = 1337;
             using var waiters = new WaitingDictionary<int, Mock>(
-                new MiddlewareBuilder<int, Mock>()
-                    .AddDuplicateActionInSet(oldMock => new Mock(oldMock))
+                new MiddlewareBuilder<Mock>()
+                    .RegisterDuplicateActionInSet(oldMock => new Mock(oldMock))
             );
             var mock = new Mock();
             await waiters.SetAsync(key, mock);
@@ -57,7 +57,7 @@ namespace Drenalol.WaitingDictionary.Tests
             const int key = 1337;
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
             var waiters = new WaitingDictionary<int, Mock>(
-                new MiddlewareBuilder<int, Mock>()
+                new MiddlewareBuilder<Mock>()
                     .RegisterCancellationActionInWait(tcs => tcs.SetException((Exception) Activator.CreateInstance(type)))
             );
             var waitTask = waiters.WaitAsync(key, cts.Token);
