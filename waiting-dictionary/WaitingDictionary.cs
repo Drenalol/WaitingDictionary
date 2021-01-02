@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
@@ -12,7 +14,7 @@ namespace Drenalol.WaitingDictionary
     /// </summary>
     /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
     /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-    public class WaitingDictionary<TKey, TValue> : IDisposable
+    public class WaitingDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TaskCompletionSource<TValue>>>, IDisposable
     {
         private readonly ConcurrentDictionary<TKey, TaskCompletionSource<TValue>> _dictionary;
         private readonly AsyncLock _asyncLock;
@@ -155,5 +157,11 @@ namespace Drenalol.WaitingDictionary
 
             _dictionary.Clear();
         }
+
+        /// <inheritdoc/>
+        public IEnumerator<KeyValuePair<TKey, TaskCompletionSource<TValue>>> GetEnumerator() => _dictionary.GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
