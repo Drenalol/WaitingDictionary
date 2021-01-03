@@ -58,11 +58,20 @@ namespace Drenalol.WaitingDictionary
         public void Clear() => _dictionary.Clear();
 
         /// <summary>
-        /// Determines whether the <see cref="ConcurrentDictionary{TKey, TValue}"/> contains the specified key.
+        /// Determines whether the <see cref="WaitingDictionary{TKey, TValue}"/> contains the specified key.
         /// </summary>
         /// <param name="key">The key to locate in the <see cref="WaitingDictionary{TKey, TValue}"/></param>
         /// <returns></returns>
         public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
+        
+        /// <summary>
+        /// Attempts to remove and return the value with the specified key from the <see cref="WaitingDictionary{TKey, TValue}"/>.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is a null reference.</exception>
+        public bool TryRemove(TKey key, out TaskCompletionSource<TValue> value) => _dictionary.TryRemove(key, out value);
 
         /// <summary>
         /// Begins an asynchronous request to receive <see cref="Task{TValue}"/> associated with the specified key.
