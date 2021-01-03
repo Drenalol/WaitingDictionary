@@ -1,5 +1,5 @@
 # WaitingDictionary
- Represents a thread-safe collection of keys and ```TaskCompletionSource{T}``` as values, managed with two methods: ```WaitAsync, SetAsync```.
+ Represents a thread-safe collection of keys and ```TaskCompletionSource{T}``` as values, managed with two methods: ```WaitAsync```, ```SetAsync```.
  
  ![Image of Waiting Guy](https://cs9.pikabu.ru/post_img/big/2017/01/28/7/1485602875186056892.jpg)
  
