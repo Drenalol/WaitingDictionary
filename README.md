@@ -1,6 +1,9 @@
 # WaitingDictionary
  Represents a thread-safe collection of keys and ```TaskCompletionSource{T}``` as values, managed with two methods: ```WaitAsync```, ```SetAsync```.
  
+ [![NuGet Pre Release](https://img.shields.io/nuget/vpre/WaitingDictionary.svg?style=for-the-badge&logo=appveyor)](https://www.nuget.org/packages/WaitingDictionary/)
+ [![netstandard 2.1](https://img.shields.io/badge/netstandard-2.1-brightgreen.svg?style=for-the-badge&logo=appveyor)](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
+ 
  ![Image of Waiting Guy](https://cs9.pikabu.ru/post_img/big/2017/01/28/7/1485602875186056892.jpg)
  
 ### Usage
