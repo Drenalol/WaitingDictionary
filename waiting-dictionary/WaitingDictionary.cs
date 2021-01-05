@@ -142,8 +142,16 @@ namespace Drenalol.WaitingDictionary
         /// </summary>
         /// <param name="key">The key of the element.</param>
         /// <param name="value">Value element that specified with key.</param>
-        /// <exception cref="InvalidOperationException">If item with the same key has already been added in dictionary and Duplication Middleware was not set it.</exception>
-        public async Task SetAsync(TKey key, TValue value)
+        /// <param name="ignoreError">Ignoring <see cref="InvalidOperationException"/> when task already in set state</param>
+        /// <exception cref="ArgumentException">If item with the same key has already been added in dictionary and Duplication Middleware was not set it.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
+        /// of the three final states:
+        /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>, 
+        /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>, or
+        /// <see cref="System.Threading.Tasks.TaskStatus.Canceled">Canceled</see>.
+        /// </exception>
+        public async Task SetAsync(TKey key, TValue value, bool ignoreError = false)
         {
             var result = value;
 
@@ -158,7 +166,7 @@ namespace Drenalol.WaitingDictionary
                     if (tcs.Task.Status == TaskStatus.RanToCompletion)
                     {
                         if (_middleware?.DuplicateActionInSet == null)
-                            throw new InvalidOperationException($"An item with the same key ({key}) has already been added.");
+                            throw new ArgumentException($"An item with the same key ({key}) has already been added.");
 
                         var oldValue = await tcs.Task;
                         var newValue = _middleware.DuplicateActionInSet(oldValue, value);
@@ -170,7 +178,10 @@ namespace Drenalol.WaitingDictionary
                 else
                     tcs = InternalCreateTcs(key);
 
-                tcs.SetResult(result);
+                if (ignoreError)
+                    tcs.TrySetResult(result);
+                else
+                    tcs.SetResult(result);
             }
 
             _middleware?.CompletionActionInSet?.Invoke();
