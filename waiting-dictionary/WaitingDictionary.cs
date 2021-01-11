@@ -21,6 +21,7 @@ namespace Drenalol.WaitingDictionary
         private readonly AsyncLock _dataLosePrevention;
         private readonly CancellationTokenSource _internalCts;
         private readonly MiddlewareBuilder<TValue> _middleware;
+        private readonly TaskCreationOptions _creationOptions = TaskCreationOptions.None;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaitingDictionary{TKey,TValue}"/> class.
@@ -41,9 +42,29 @@ namespace Drenalol.WaitingDictionary
             _middleware = middlewareBuilder;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitingDictionary{TKey,TValue}"/> class.
+        /// </summary>
+        /// <param name="creationOptions">Specifies flags that control optional behavior for the creation and execution of tasks</param>
+        public WaitingDictionary(TaskCreationOptions creationOptions) : this()
+        {
+            _creationOptions = creationOptions;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitingDictionary{TKey,TValue}"/> class.
+        /// </summary>
+        /// <param name="middlewareBuilder">Middleware builder using it to add some logic to the Wait or Set methods</param>
+        /// <param name="creationOptions">Specifies flags that control optional behavior for the creation and execution of tasks</param>
+        public WaitingDictionary(MiddlewareBuilder<TValue> middlewareBuilder, TaskCreationOptions creationOptions) : this()
+        {
+            _middleware = middlewareBuilder;
+            _creationOptions = creationOptions;
+        }
+
         private TaskCompletionSource<TValue> InternalCreateTcs(TKey key)
         {
-            var tcs = new TaskCompletionSource<TValue>();
+            var tcs = new TaskCompletionSource<TValue>(_creationOptions);
             _dictionary.TryAdd(key, tcs);
             return tcs;
         }
