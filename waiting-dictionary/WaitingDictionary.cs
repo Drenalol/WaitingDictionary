@@ -45,7 +45,7 @@ public class WaitingDictionary<TKey, TValue> : IDictionary<TKey, WaitItem<TValue
         MiddlewareBuilder<TValue>? middlewareBuilder = null,
         TaskCreationOptions creationOptions = TaskCreationOptions.None,
         int staleItemTimeToLiveMs = 0,
-        ILogger<WaitingDictionary<TKey, TValue>>? logger = null
+        ILogger? logger = null
     )
     {
         _middleware = middlewareBuilder;
