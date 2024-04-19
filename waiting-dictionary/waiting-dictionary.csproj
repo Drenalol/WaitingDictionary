@@ -6,14 +6,16 @@
         <Authors>Bogdan Yanysh</Authors>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageId>WaitingDictionary</PackageId>
-        <PackageVersion>1.0.6</PackageVersion>
+        <PackageVersion>1.1.0</PackageVersion>
         <PackageTags>List;Dictionary;Concurrent;Async;Threadsafe</PackageTags>
         <Description>Represents a thread-safe collection of keys and TaskCompletionSource{T} as values.</Description>
         <PackageProjectUrl>https://github.com/Drenalol/WaitingDictionary</PackageProjectUrl>
         <RepositoryUrl>https://github.com/Drenalol/WaitingDictionary</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Title>WaitingDictionary</Title>
-        <Copyright>© 2021 Bogdan Yanysh</Copyright>
+        <Copyright>© 2024 Bogdan Yanysh</Copyright>
+        <Nullable>enable</Nullable>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -21,7 +23,8 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Nito.AsyncEx" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+        <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
     </ItemGroup>
 
 </Project>
