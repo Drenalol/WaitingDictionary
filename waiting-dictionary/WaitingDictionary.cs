@@ -265,9 +265,9 @@ public class WaitingDictionary<TKey, TValue> : IDictionary<TKey, WaitItem<TValue
             waitItem.DelayedTask.TrySetCanceled();
             
             if (isRemoved)
-                _logger.LogInformation("Cleared stale item {StaleItemKey}:{StaleItemState}", key, state);
+                _logger.LogWarning("Cleared stale item {StaleItemKey}:{StaleItemState}", key, state);
             else
-                _logger.LogWarning("Clearing stale item {StaleItemKey}:{StaleItemState} failed", key, state);
+                _logger.LogError("Clearing stale item {StaleItemKey}:{StaleItemState} failed", key, state);
         }
     }
     
