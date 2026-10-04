@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, beta ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.x
+      - name: Build
+        run: dotnet build waiting-dictionary.sln --configuration Release
+      - name: Test
+        run: dotnet test waiting-dictionary.tests --configuration Release --no-build
