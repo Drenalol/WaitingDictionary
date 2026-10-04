@@ -47,7 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           dotnet nuget add source --username "$GITHUB_ACTOR" --password "$GITHUB_TOKEN" --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Drenalol/index.json"
-          dotnet nuget push "./packages/*.nupkg" --source github --skip-duplicate
+          dotnet nuget push "./packages/*.nupkg" --api-key "$GITHUB_TOKEN" --source github --skip-duplicate
       - name: NuGet login (OIDC to temp API key)
         uses: NuGet/login@v1
         id: login
