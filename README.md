@@ -160,13 +160,14 @@ Library targets `netstandard2.1` (LangVersion latest), tests target `net10.0` (N
 
 ## Publishing (maintainers)
 
-Packages are published via [NuGet Trusted Publishing (OIDC)](https://docs.nuget.org/nuget-org/publishing-docs/trusted-published) - there is no API key stored in the repository. `release.yml` runs on a GitHub Release publish and pushes the package with `dotnet nuget push` (no `-k`).
+Every green push to `master` publishes the package to nuget.org via [NuGet Trusted Publishing (OIDC)](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) - there is no API key stored in the repository. The package version is taken from `<Version>` in `waiting-dictionary.csproj`.
+
+To ship a new package: bump `<Version>` in the csproj, commit and push to `master`. The `publish` job in `ci.yml` runs after a successful build + test, exchanges the job's OIDC token for a short-lived API key with `NuGet/login@v1`, and pushes with `--skip-duplicate`.
 
 One-time setup:
 
-1. On nuget.org: package **WaitingDictionary** -> *Manage* -> *Trusted Publishing* -> add a GitHub rule: owner `Drenalol`, repository `WaitingDictionary`, workflow file `release.yml` (optionally pin an environment - then set the same `environment` in `release.yml`).
-2. Remove the obsolete `NUGET_AUTH_TOKEN` repository secret.
-3. Cut a GitHub Release - the workflow packs and pushes it (`--skip-duplicate`).
+1. On nuget.org: user menu -> *Trusted Publishing* -> *Add policy*: owner `Drenalol`, repository `WaitingDictionary`, workflow file `ci.yml` (filename only). Environment: leave empty unless the workflow uses `environment:`.
+2. In the GitHub repository: add a `NUGET_USER` secret (your nuget.org profile name, not email) and remove the obsolete `NUGET_AUTH_TOKEN` secret.
 
 ## License
 

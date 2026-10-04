@@ -19,3 +19,31 @@ jobs:
         run: dotnet build waiting-dictionary.sln --configuration Release
       - name: Test
         run: dotnet test waiting-dictionary.tests --configuration Release --no-build
+
+  publish:
+    # Publishes to nuget.org on every push to master with the <Version> from waiting-dictionary.csproj.
+    # To ship a new package, bump <Version>, commit and push. NuGet Trusted Publishing (OIDC):
+    # no API key secret, but a NUGET_USER secret (nuget.org profile name) is required.
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.x
+      - name: Pack
+        run: dotnet pack waiting-dictionary --configuration Release -o "./packages"
+      - name: NuGet login (OIDC to temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+      - name: Push to NuGet
+        run: dotnet nuget push "./packages/*.nupkg" --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
