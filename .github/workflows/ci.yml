@@ -21,9 +21,10 @@ jobs:
         run: dotnet test waiting-dictionary.tests --configuration Release --no-build
 
   publish:
-    # Publishes to nuget.org on every push to master with the <Version> from waiting-dictionary.csproj.
-    # To ship a new package, bump <Version>, commit and push. NuGet Trusted Publishing (OIDC):
-    # no API key secret, but a NUGET_USER secret (nuget.org profile name) is required.
+    # Publishes the package on every push to master with the <Version> from waiting-dictionary.csproj.
+    # To ship a new package, bump <Version>, commit and push.
+    # It goes to two registries: GitHub Packages (shown on the repo Packages page, GITHUB_TOKEN)
+    # and nuget.org (NuGet Trusted Publishing/OIDC, needs a NUGET_USER secret with the nuget.org profile name).
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -31,6 +32,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +42,12 @@ jobs:
           dotnet-version: 10.x
       - name: Pack
         run: dotnet pack waiting-dictionary --configuration Release -o "./packages"
+      - name: Publish to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet nuget add source --username "$GITHUB_ACTOR" --password "$GITHUB_TOKEN" --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Drenalol/index.json"
+          dotnet nuget push "./packages/*.nupkg" --source github --skip-duplicate
       - name: NuGet login (OIDC to temp API key)
         uses: NuGet/login@v1
         id: login

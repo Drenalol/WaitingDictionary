@@ -160,9 +160,12 @@ Library targets `netstandard2.1` (LangVersion latest), tests target `net10.0` (N
 
 ## Publishing (maintainers)
 
-Every green push to `master` publishes the package to nuget.org via [NuGet Trusted Publishing (OIDC)](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) - there is no API key stored in the repository. The package version is taken from `<Version>` in `waiting-dictionary.csproj`.
+Every green push to `master` publishes the package to two registries:
 
-To ship a new package: bump `<Version>` in the csproj, commit and push to `master`. The `publish` job in `ci.yml` runs after a successful build + test, exchanges the job's OIDC token for a short-lived API key with `NuGet/login@v1`, and pushes with `--skip-duplicate`.
+- **nuget.org** via [NuGet Trusted Publishing (OIDC)](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) - there is no API key stored in the repository.
+- **GitHub Packages** (`nuget.pkg.github.com/Drenalol`) with the built-in `GITHUB_TOKEN`, so the package also shows up on the repository's *Packages* page.
+
+The package version is taken from `<Version>` in `waiting-dictionary.csproj`. To ship a new package: bump `<Version>` in the csproj, commit and push to `master`. The `publish` job in `ci.yml` runs after a successful build + test, pushes to GitHub Packages, exchanges the job's OIDC token for a short-lived API key with `NuGet/login@v1`, and pushes to nuget.org - both with `--skip-duplicate`. Consumers should install from nuget.org; the GitHub Packages copy mirrors it.
 
 One-time setup:
 
